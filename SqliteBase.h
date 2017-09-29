@@ -1,15 +1,18 @@
 #ifndef SqliteBase_H  
 #define SqliteBase_H  
   
-#include "sqlite3.h"  
-  
 #include <string.h>  
-#include <mutex>  
 #include <iostream>  
   
+#include <pthread.h>  
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "sqlite3.h"  
+#include "IMyDB.h"  
+
 using namespace std;  
   
- 
 
 typedef struct qureyResult  
 {  
@@ -71,7 +74,7 @@ typedef struct qureyResult
     }  
 } Result;  
   
-class SqliteBase : IMyDB
+class SqliteBase : public IMyDB
 {  
 public:  
     SqliteBase(const string &pDBName, int pVersion = 1);  
@@ -91,7 +94,7 @@ private:
     string dbName;  
     int version;  
   
-    mutex m_lock;  
+    pthread_mutex_t m_lock;  
 };  
   
 

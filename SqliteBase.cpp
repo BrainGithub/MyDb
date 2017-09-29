@@ -1,11 +1,6 @@
-#include "SqliteBase.h"  
+#include "SqliteBase.h"   
   
-#include <thread>  
-#include <strstream>  
-#include <stdio.h>
-#include <stdlib.h>
-  
-using namespace mydbmodule;  
+//using namespace mydbmodule;  
   
 SqliteBase::SqliteBase(const string &pDBName, int pVersion)  
 {  
@@ -25,7 +20,7 @@ sqlite3* SqliteBase::OpenDB()
         errMsg.append("Param error dbName=");  
         errMsg.append(dbName);   
         errMsg.append(",version=");  
-        errMsg.append(PublicFunction::IntToString(version));  
+        //errMsg.append(PublicFunction::IntToString(version));  
         printf("[sqlite] SqliteBase open :%s",errMsg.c_str());  
         return NULL;  
     }   
@@ -121,4 +116,5 @@ Result *SqliteBase::Query(sqlite3 *p, const string &sql)
     //free memory  
     sqlite3_free(errmsg);  
     return pRe;  
-}  
+}
+

@@ -6,6 +6,6 @@ using namespace std;
 class IMyDB
 {
 public:
-    void * Open() = 0;
-    Close() = 0;
+    virtual void * Open(){};
+    virtual void Close(void *){};
 };

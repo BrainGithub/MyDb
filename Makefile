@@ -4,7 +4,9 @@ DEPS = *.h
 OBJ = SqliteBase.o
 
 %.o: %.c $(DEPS)
-        $(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 hellomake: $(OBJ)
-        gcc -o $@ $^ $(CFLAGS)
+	gcc -o $@ $^ $(CFLAGS)
+clean:
+	rm *.o a.out

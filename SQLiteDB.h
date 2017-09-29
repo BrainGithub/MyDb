@@ -3,30 +3,29 @@
   
 #include <list>  
 #include "SqliteBase.h"  
-#include "dbmanager.h"  
 
-namespace mydbmodule {  
+//namespace mydbmodule {  
   
-class SQLiteDB : public SqliteBase  
+class SQLiteDB : public SqliteBase 
 {  
-public:  
-    static SQLiteDB* GetInstance(const string &pDBName, int version = 0);  
-  
-private:  
-    SQLiteDB(const string &dbName, const string &pPath, int version);  
+public: 
+	SQLiteDB(const string &pDBName, int vresion);
+    static SQLiteDB* GetInstance(const string &pDBName, int version);  
+	void * Open();
+	void Close(void *);
 	
 private:  
-    mutex lock;  
-    const string _msgRecordTblName;  
-    string _strDbName;
+    //const string _msgRecordTblName;  
+    //string _strDbName;
 	
 	list<void *> _db_conn_busy;
 	list<void *> _db_conn_idle;
 	pthread_t _db_pool_id;
 	
+	void createConnPool();
 	void db_pool_task();
   
-    static mutex m_mutex;  
+    static pthread_mutex_t _mutex;  
   
     class CGarbo  
     {  
@@ -45,7 +44,6 @@ private:
     static SQLiteDB* instance;  
 };  
   
-#define DBManag DBManager::GetInstance()  
-}  
+//}  
   
 #endif // DBRECORD_H 

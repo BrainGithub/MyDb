@@ -1,42 +1,39 @@
-#include "dbchatrecord.h"  
+#include "SQLiteDB.h"  
   
-#include <strstream>  
   
-using namespace mydbmodule;  
+//using namespace mydbmodule;  
   
-mutex SQLiteDB::m_mutex;  
-SQLiteDB* DBCRecord::instance = NULL;  
+pthread_mutex_t SQLiteDB::_mutex = PTHREAD_MUTEX_INITIALIZER;  
+SQLiteDB* SQLiteDB::instance = NULL;  
 SQLiteDB::CGarbo SQLiteDB::Garbo;  
   
 SQLiteDB* SQLiteDB::GetInstance(const string &pDBName, int version = 0)  
 {  
     if(NULL == instance)  
     {  
-        m_mutex.lock();
+        pthread_mutex_lock(&_mutex);
         if(NULL == instance)  
         {  
             instance = new SQLiteDB(pDBName, version);  
         }  
-        m_mutex.unlock();
+        pthread_mutex_unlock(&_mutex);
     }  
     return instance;  
 }  
   
 SQLiteDB::SQLiteDB(const string &dbName, int version):  
-    SqliteBase(dbName, version),  
-    m_msgRecordTblName("TBL_RECORD"),  
-    m_strDbName(dbName)  
+    SqliteBase(dbName, version)  
 {  
 	//build connection pool
 }   
  
-SQLiteDB::createConnPool()
+void SQLiteDB::createConnPool()
 {
 	int ret;
 	
-	ret = pthread_create(&_db_pool_id, NULL, db_pool_task, NULL);
+	//ret = pthread_create(&_db_pool_id, NULL, db_pool_task, NULL);
 	
-	if (ret == NULL)
+	if (ret == 0)
 	{
 		printf("build db connectoin pool failed");
 	}
@@ -44,25 +41,26 @@ SQLiteDB::createConnPool()
 	return;
 }
 
-SQLiteDB::db_pool_task(void)
+void SQLiteDB::db_pool_task(void)
 {
 	int count = 10;
-	
-	m_mutex.lock();
+	sqlite3 * db;
+
+	pthread_mutex_lock(&_mutex);
 	
 	for (int i=0; i<count; i++)
 	{
-		db = Open();
+		db = (sqlite3 *)Open();
 		if (db == NULL)
 		{
-			m_mutex.unlock();
+			pthread_mutex_unlock(&_mutex);
 			printf("Error: open db failed\n");
 			return;
 		}
 		_db_conn_idle.push_back(db);
 	}
 	
-	m_mutex.unlock();
+	pthread_mutex_unlock(&_mutex);
 	
 	// need to implemented
 	while (true)
@@ -71,14 +69,14 @@ SQLiteDB::db_pool_task(void)
 	}
 }
 
-sqlite3 * SQLiteDB::Open()
+void * SQLiteDB::Open()
 {
-	sqlite3 * db = NULL;
+	void * db = NULL;
 	
-	m_mutex.lock();
+	pthread_mutex_lock(&_mutex);
 	
 	if (_db_conn_idle.empty()){
-		m_mutex.unlock();
+		pthread_mutex_unlock(&_mutex);
 		printf("Warning: no idle db connection return;\n");
 		return NULL;
 	}
@@ -86,19 +84,19 @@ sqlite3 * SQLiteDB::Open()
 	_db_conn_idle.pop_front();
 	_db_conn_busy.push_back(db);
 	
-	m_mutex.unlock();
+	pthread_mutex_unlock(&_mutex);
 	
 	return db;
 }
 
-SQLiteDB::Close(sqlite3 * db)
+void SQLiteDB::Close(void * db)
 {
-	m_mutex.lock();
+	pthread_mutex_lock(&_mutex);
 	
-	_db_conn_busy.remove(db)
+	_db_conn_busy.remove(db);
 	_db_conn_idle.push_back(db);
 	
-	m_mutex.unlock();
+	pthread_mutex_unlock(&_mutex);
 	
 	return;
 }
