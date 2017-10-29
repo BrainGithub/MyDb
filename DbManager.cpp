@@ -1,33 +1,41 @@
-#include "dbmanager.h"  
-#include "dbchatrecord.h"  
-#include <vector>  
+#include "DbManager.h"  
   
-using namespace mydbmodule;  
+//using namespace mydbmodule;  
   
-mutex DBManager::g_mutex;  
-DBManager::CGarbo DBManager::Garbo;  
-DBManager* DBManager::instance = nullptr;  
+pthread_mutex_t DbManager::mutex = PTHREAD_MUTEX_INITIALIZER;
+DbManager::CGarbo DbManager::Garbo;  
+DbManager* DbManager::instance = NULL;  
   
-DBManager *DBManager::GetInstance()  
+DbManager *DbManager::Instance()  
 {  
     if(NULL == instance)  
     {  
-         g_mutex.lock();  
+         pthread_mutex_lock(&mutex);  
          if(NULL == instance)  
          {  
-             instance = new DBManager();  
+             instance = new DbManager();  
          }  
-         g_mutex.unlock();  
+         pthread_mutex_unlock(&mutex);  
      }  
     return instance;  
 }  
   
-void * DBManager::GetDB()  
+SQLiteDB * DbManager::GetDB()  
 {  
-    return _mydb;  
+    return mydb;  
 }  
   
-DBManager::DBManager()  
+DbManager::DbManager()  
 {  
-    _mydb = DBFactury::GetInstance()->Create("SQLite3");
+    printf("in DbManager::DbManager()\n");
+    
+    printf("DbFactury::Create SQLite3 start\n");
+    mydb = DbFactury::Create("SQLite3");
+    printf("DbFactury::Create SQLite3 end\n");
 }  
+
+DbManager::~DbManager()
+{
+    printf("in DbManager::~DbManager()\n");
+    //delete mydb;
+}

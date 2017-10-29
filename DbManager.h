@@ -1,36 +1,41 @@
 #ifndef DBMANAGER_H  
 #define DBMANAGER_H  
   
-namespace mydbmodule {  
+#include <pthread.h>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include "DbFactury.h"
+//namespace mydbmodule {  
+using namespace std;
   
-class DBManager  
+class DbManager  
 {  
 public:  
-    static DBManager* GetInstance();  
+    static DbManager* Instance();  
   
-    void *GetDB();  
+    SQLiteDB *GetDB();  
 private:  
-    class CGarbo // 它的唯一工作就是在析构函数中删除ReceiveMsgManagerThread的实例  
+    class CGarbo 
+    {
+    public:
+    ~CGarbo()
     {  
-    public:  
-        ~CGarbo()  
+        if (DbManager::instance)  
         {  
-            if (DBManager::_instance)  
-            {  
-                delete DBManager::instance;  
-            }  
+            delete DbManager::instance;  
         }  
+    }  
     };  
-    static CGarbo Garbo; // 定义一个静态成员，在程序结束时，系统会调用它的析构函数  
-    static DBManager* instance;  
+    static CGarbo Garbo; 
+    static DbManager* instance;
+    static pthread_mutex_t mutex;  
+    SQLiteDB * mydb;
 
-    static mutex g_mutex;  
-
-    DBFactury * _dbfactury;
-  
-    DBManager();  
+    DbManager();  
+    ~DbManager();  
 };  
   
-}  
+//}  
   
 #endif // DBMANAGER_H  

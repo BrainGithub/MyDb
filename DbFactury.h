@@ -10,8 +10,9 @@
 class DbFactury
 {  
 public:  
-	DbFactury();
-    IMyDB * Create(string);
+    DbFactury();
+    ~DbFactury();
+    static SQLiteDB * Create(string);
 };
 
 //}

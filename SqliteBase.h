@@ -7,8 +7,9 @@
 #include <pthread.h>  
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-#include "sqlite3.h"  
+#include <sqlite3.h> 
 #include "IMyDB.h"  
 
 using namespace std;  
@@ -38,6 +39,7 @@ typedef struct qureyResult
             sqlite3_free_table(pResult);  
         }  
     }  
+
     bool next()  
     {  
         if(nIndex == 0)  
@@ -59,7 +61,8 @@ typedef struct qureyResult
             }  
         }  
     }  
-    char* value(char *pColumnName)  
+
+    char* value(const char *pColumnName)  
     {  
         int index = nIndex*nColumn;  
         for(int i = 0; i < nColumn; ++i)  

@@ -4,15 +4,17 @@ using namespace std;
 //using namespace mydbmodule;  
   
 
-IMyDB * DbFactury::Create(string dbname)  
+SQLiteDB * DbFactury::Create(string dbtype)  
+//void * DbFactury::Create(string dbname)  
 {  
-    if (dbname == "SQLite3")
+    if (dbtype == "SQLite3")
     {
-        return SQLiteDB::GetInstance(dbfile,10);
+        printf("SQLiteDB::GetInstance(motion.db,10)\n");
+        return SQLiteDB::GetInstance("motion.db",1);
     }
-    else if (dbname == "MySql")
+    else if (dbtype == "MySql")
     {
-        return MySqlDB::GetInstance(dbfile);
+        //return MySqlDB::GetInstance(dbname); 
     }
 
     return NULL;
@@ -22,3 +24,4 @@ DbFactury::DbFactury()
 {  
   
 } 
+

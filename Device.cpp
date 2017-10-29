@@ -1,19 +1,19 @@
-#include "Site.h"
+#include "Device.h"
 
-const string Site::id = "id";
-const string Site::serialno = "serialno";
-const string Site::productno = "productno";
-const string Site::create_date = "create_date";
-const string Site::update_date = "update_date";
-const string Site::expire_date = "expire_date";
-const string Site::profile = "profile";
+const string Device::id = "id";
+const string Device::siteid = "siteid";
+const string Device::device_type = "device_type";
+const string Device::create_date = "create_date";
+const string Device::update_date = "update_date";
+const string Device::expire_date = "expire_date";
+const string Device::profile = "profile";
     
-Site::Site()
+Device::Device()
 {
-    tableName = "site";
+    tableName = "device";
 }
         
-bool Site::Save(void)
+bool Device::Save(void)
 {
     bool state = false;
     string sqlStr;
@@ -28,11 +28,11 @@ bool Site::Save(void)
         temp.append(this->id);
         tblItems += IsNullOrEmpty(table.id) ? "":temp;
         temp = IsNullOrEmpty(tblItems)? "":",";
-        temp.append(this->serialno);
-        tblItems += IsNullOrEmpty(table.serialno) ? "":temp;
+        temp.append(this->siteid);
+        tblItems += IsNullOrEmpty(table.siteid) ? "":temp;
         temp = IsNullOrEmpty(tblItems)? "":",";
-        temp.append(this->productno);
-        tblItems += IsNullOrEmpty(table.productno) ? "":temp;
+        temp.append(this->device_type);
+        tblItems += IsNullOrEmpty(table.device_type) ? "":temp;
         temp = IsNullOrEmpty(tblItems)? "":",";
         temp.append(this->create_date);
         tblItems += IsNullOrEmpty(table.create_date) ? "":temp;
@@ -51,16 +51,16 @@ bool Site::Save(void)
         temp.append(table.id);
         values.append(IsNullOrEmpty(table.id) ? "":temp);
         temp = IsNullOrEmpty(values) ? "":","; 
-        temp.append("'");
-        temp.append(table.serialno);
-        temp.append("'");
-        values.append(IsNullOrEmpty(table.serialno) ? "":temp);
+        //temp.append("'");
+        temp.append(table.siteid);
+        //temp.append("'");
+        values.append(IsNullOrEmpty(table.siteid) ? "":temp);
 
         temp = IsNullOrEmpty(values) ? "":",";
-        temp.append("'");
-        temp.append(table.productno);
-        temp.append("'");
-        values.append(IsNullOrEmpty(table.productno) ? "":temp);
+        //temp.append("'");
+        temp.append(table.device_type);
+        //temp.append("'");
+        values.append(IsNullOrEmpty(table.device_type) ? "":temp);
         temp = IsNullOrEmpty(values) ? "":","; 
         temp.append("'");
         temp.append(table.create_date);
@@ -84,7 +84,7 @@ bool Site::Save(void)
 
         if (IsNullOrEmpty(tblItems) || IsNullOrEmpty(values))
         {
-            printf("insert Site IsNullOrEmpty(tblItems) || IsNullOrEmpty(values)\n");
+            printf("insert Device IsNullOrEmpty(tblItems) || IsNullOrEmpty(values)\n");
             return false;
         }
 
@@ -100,21 +100,21 @@ bool Site::Save(void)
     else
     {
         values = "";
-        if (!IsNullOrEmpty(table.serialno)){
-            values.append(this->serialno);
+        if (!IsNullOrEmpty(table.siteid)){
+            values.append(this->siteid);
             values.append("=");
-            values.append("'");
-            values.append(table.serialno);
-            values.append("'");
+            //values.append("'");
+            values.append(table.siteid);
+            //values.append("'");
         }
 
-        if (!IsNullOrEmpty(table.productno)){
+        if (!IsNullOrEmpty(table.device_type)){
             values.append(",");
-            values.append(this->productno);
+            values.append(this->device_type);
             values.append("=");
-            values.append("'");
-            values.append(table.productno);
-            values.append("'");
+            //values.append("'");
+            values.append(table.device_type);
+            //values.append("'");
         }
 
         if (!IsNullOrEmpty(table.create_date)){
@@ -154,7 +154,7 @@ bool Site::Save(void)
         }
 
         if (IsNullOrEmpty(table.id) || (IsNullOrEmpty(values))){
-            printf("update Site IsNullOrEmpty(table.id) || (IsNullOrEmpty(values)\n");
+            printf("update Device IsNullOrEmpty(table.id) || (IsNullOrEmpty(values)\n");
             return false;
         }
 
@@ -169,12 +169,12 @@ bool Site::Save(void)
         sqlStr.append(";");
     }
 
-    printf("Site:%s\n", sqlStr.c_str());
+    printf("Device:%s\n", sqlStr.c_str());
     state =  mydb->Exec(sqlStr); 
     return state;
 }
     
-bool Site::Find(list<Table> * lt)
+bool Device::Find(list<Table> * lt)
 {
     string temp = "";
     string condition = "";
@@ -188,24 +188,22 @@ bool Site::Find(list<Table> * lt)
         temp.append(table.id);
         condition.append(temp);
     }
-    if (!IsNullOrEmpty(table.serialno))
+    if (!IsNullOrEmpty(table.siteid))
     {
         temp = "";
         temp.append(IsNullOrEmpty(condition)? "":" and ");
-        temp.append(this->serialno);
-        temp.append("='");
-        temp.append(table.serialno);
-        temp.append("'");
+        temp.append(this->siteid);
+        temp.append("=");
+        temp.append(table.siteid);
         condition.append(temp);
     }
-    if (!IsNullOrEmpty(table.productno))
+    if (!IsNullOrEmpty(table.device_type))
     {
         temp = "";
         temp.append(IsNullOrEmpty(condition)? "":" and ");
-        temp.append(this->productno);
-        temp.append("='");
-        temp.append(table.productno);
-        temp.append("'");
+        temp.append(this->device_type);
+        temp.append("=");
+        temp.append(table.device_type);
         condition.append(temp);
     }
     if (!IsNullOrEmpty(table.create_date))
@@ -260,7 +258,7 @@ bool Site::Find(list<Table> * lt)
     }
     sqlStr.append(" limit 100;");
 
-    printf("Site:%s\n", sqlStr.c_str());
+    printf("Device:%s\n", sqlStr.c_str());
     Result * res = mydb->Query(sqlStr);
     
     if (res == NULL)
@@ -272,10 +270,10 @@ bool Site::Find(list<Table> * lt)
         char * str = NULL;
         str = res->value(this->id.c_str());    
         tbl.id = (str == NULL ? "":str);
-        str = res->value(this->serialno.c_str());
-        tbl.serialno = (str == NULL ? "":str);
-        str = res->value(this->productno.c_str());
-        tbl.productno = (str == NULL ? "":str); 
+        str = res->value(this->siteid.c_str());
+        tbl.siteid = (str == NULL ? "":str);
+        str = res->value(this->device_type.c_str());
+        tbl.device_type = (str == NULL ? "":str); 
         str = res->value(this->create_date.c_str());
         tbl.create_date = (str == NULL ? "":str); 
         str = res->value(this->update_date.c_str());
@@ -286,8 +284,8 @@ bool Site::Find(list<Table> * lt)
         tbl.profile = (str == NULL ? "":str);
 
         cout << tbl.id << "|"
-             << tbl.serialno << "|" 
-             << tbl.productno << "|" 
+             << tbl.siteid << "|" 
+             << tbl.device_type << "|" 
              << tbl.create_date << "|" 
              << tbl.update_date << "|" 
              << tbl.expire_date << "|" 
@@ -299,7 +297,7 @@ bool Site::Find(list<Table> * lt)
     return true;
 }
 
-bool Site::Del()
+bool Device::Del()
 {
     bool state = false;
     string condition = "";
@@ -321,7 +319,7 @@ bool Site::Del()
     sqlStr.append(condition);
     sqlStr.append(";");
 
-    printf("Site:%s\n", sqlStr.c_str());
+    printf("Device:%s\n", sqlStr.c_str());
     state = mydb->Exec(sqlStr);
     return state;
 }

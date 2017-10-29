@@ -12,7 +12,7 @@ sqlite3* SqliteBase::OpenDB()
 {  
     string dbstr = dbName;  
     sqlite3 *pSqlite = NULL;
-	
+    
     //assert
     if(dbName.empty() || version < 0)  
     {
@@ -96,6 +96,22 @@ bool SqliteBase::Exec(sqlite3 *p, const string &sql)
     sqlite3_free(errMsg);  
     return result;  
 }  
+/*
+bool SqliteBase::Exec(const string &sql)  
+{  
+    bool result = true;  
+    char *errMsg = NULL;  
+    sqlite3 * p = Open();
+    int  ret = sqlite3_exec ( p , sql.c_str() , 0 , 0 , & errMsg );  
+    if(ret != SQLITE_OK)  
+    {   
+        printf("[sqlite] SqliteBase Update error:dbName=%s,msg=%s sql:%s",dbName.c_str(),errMsg,sql.c_str());  
+        result = false;  
+    }  
+    sqlite3_free(errMsg);  
+    return result;  
+}  
+*/ 
   
 Result *SqliteBase::Query(sqlite3 *p, const string &sql)  
 {  
@@ -104,14 +120,15 @@ Result *SqliteBase::Query(sqlite3 *p, const string &sql)
     char **dbResult;  
     int nRow = 0;  
     int nColumn = 0;  
-    
-	//start exec query  
+ 
+    //start exec query  
     int result = sqlite3_get_table(p, sql.c_str(), &dbResult, &nRow, &nColumn, &errmsg );  
     if(result == SQLITE_OK)  
     {  
+        printf("nRow:%d, nColumn:%d\n", nRow, nColumn);
         pRe = new Result(nRow,nColumn,dbResult);  
     }else{  
-        printf("[sqlite] SqliteBase Query error:dbName=%s,msg=%s sql:%s",dbName.c_str(),errmsg,sql.c_str());  
+        printf("[sqlite] SqliteBase Query error:dbName=%s,msg=%s sql:%s\n",dbName.c_str(),errmsg,sql.c_str());  
     }  
     //free memory  
     sqlite3_free(errmsg);  
